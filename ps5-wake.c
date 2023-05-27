@@ -481,9 +481,7 @@ int main(int argc, char *argv[])
                 break;
             }
         }
-        else fputc('.', stderr);
-        fputc('\n', stderr);
-
+        
         if (probe && json) json_output(reply);
     }
 
