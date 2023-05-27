@@ -225,6 +225,10 @@ static void json_output(struct ddp_reply *reply)
     );
 }
 
+static void json_output_not_found() {
+    fprintf(stdout, "{\"code\":404,\"timestamp\":%ld}\n",(long)time(NULL));
+}
+
 void onexit(void)
 {
     if (host_remote != NULL) free(host_remote);
@@ -451,14 +455,16 @@ int main(int argc, char *argv[])
     if (verbose) fputc('\r', stderr);
 
     if (!found_device) {
-        fprintf(stderr, "No device found.\n");
-        return _EXIT_DEVNOTFOUND;
+        if (verbose) {
+            fprintf(stderr, "No device found.\n");
+        }
+        if (probe && json) json_output_not_found();
+        return _EXIT_SUCCESS;
     }
     else {
-        fprintf(stderr, "Device found");
         if (verbose) {
-            fprintf(stderr, ": %s [%s/%s]",
-                reply->host_name, reply->host_type, reply->host_id);
+            fprintf(stderr, "Device found");
+            fprintf(stderr, ": %s [%s/%s]", reply->host_name, reply->host_type, reply->host_id);
             switch (reply->code) {
             case 200:
                 if (reply->running_app_name != NULL) {
